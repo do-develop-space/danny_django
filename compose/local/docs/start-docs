@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# Sphinx 문서 자동 빌드 및 서빙
+sphinx-autobuild /docs /docs/_build/html \
+    --host 0.0.0.0 \
+    --port 9000 \
+    --watch /app/config \
+    --watch /app/danny_django \
+    --ignore "*.pyc" \
+    --ignore "*~" \
+    --ignore "*/migrations/*"

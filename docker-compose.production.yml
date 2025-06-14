@@ -1,0 +1,65 @@
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  production_static_files: {}
+  production_media_files: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+    image: danny_django_production_django
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    command: /start
+    volumes:
+      - production_static_files:/app/staticfiles
+      - production_media_files:/app/media
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: danny_django_production_postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.production/.postgres
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/production/nginx/Dockerfile
+    image: danny_django_local_nginx
+    depends_on:
+      - django
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+    volumes:
+      - production_static_files:/usr/share/nginx/html/static:ro
+      - production_media_files:/usr/share/nginx/html/media:ro
+
+  redis:
+    image: redis:6
+
+  celeryworker:
+    <<: *django
+    image: danny_django_production_celeryworker
+    command: /start-celeryworker
+
+  celerybeat:
+    <<: *django
+    image: danny_django_production_celerybeat
+    command: /start-celerybeat
+
+  flower:
+    <<: *django
+    image: danny_django_production_flower
+    command: /start-flower

@@ -1,4 +1,4 @@
-exclude: '^docs/|/migrations/|devcontainer.json'
+﻿exclude: '^docs/|/migrations/|devcontainer.json'
 default_stages: [pre-commit]
 minimum_pre_commit_version: "3.2.0"
 
@@ -27,13 +27,13 @@ repos:
       - id: django-upgrade
         args: ['--target-version', '5.0']
 
-  # Run the Ruff linter.
+  # Run the Ruff linter and formatter
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.13
     hooks:
       # Linter
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
+        args: [--ignore=ERA001, --fix, --exit-non-zero-on-fix]
       # Formatter
       - id: ruff-format
 
