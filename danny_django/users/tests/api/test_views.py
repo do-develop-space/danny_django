@@ -1,4 +1,7 @@
 import pytest
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APIClient
 from rest_framework.test import APIRequestFactory
 
 from danny_django.users.api.views import UserViewSet
@@ -33,3 +36,18 @@ class TestUserViewSet:
             "url": f"http://testserver/api/users/{user.username}/",
             "name": user.name,
         }
+
+
+@pytest.mark.django_db
+def test_user_signup():
+    client = APIClient()
+    url = reverse("api:user-signup")
+    data = {
+        "username": "newuser",
+        "password": "newpassword",
+        "email": "newuser@example.com",
+        "name": "New User",
+    }
+    response = client.post(url, data, format="json")
+    assert response.status_code == status.HTTP_201_CREATED
+    assert User.objects.filter(username="newuser").exists()

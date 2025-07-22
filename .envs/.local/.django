@@ -1,5 +1,6 @@
 # General
 # ------------------------------------------------------------------------------
+DJANGO_SECRET_KEY=danny-django
 USE_DOCKER=yes
 IPYTHONDIR=/app/.ipython
 # Redis

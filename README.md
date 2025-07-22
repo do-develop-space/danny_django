@@ -11,6 +11,9 @@ License: MIT
 
 Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getting-started/settings.html).
 
+**Important: SECRET_KEY**
+The `SECRET_KEY` for development is set in `.envs/.local/.django`. For this project, it has been set to `danny-django`.
+
 ## Basic Commands
 
 ### Setting Up Your Users
@@ -40,6 +43,28 @@ To run the tests, check your test coverage, and generate an HTML coverage report
 #### Running tests with pytest
 
     $ pytest
+
+**Note on Testing Database Connection:**
+During testing, you might encounter database connection errors (e.g., `fe_sendauth: no password supplied`). This often happens because the test environment tries to connect to a PostgreSQL database without proper credentials or host. Ensure your `.envs/.local/.postgres` file has `POSTGRES_HOST=localhost` and correct `POSTGRES_USER` and `POSTGRES_PASSWORD` for your local PostgreSQL setup.
+
+### API Authentication (JWT)
+
+This project uses `djangorestframework-simplejwt` for JWT (JSON Web Token) based authentication for its API endpoints.
+
+**Configuration:**
+- `djangorestframework-simplejwt` is configured as a `DEFAULT_AUTHENTICATION_CLASSES` in `config/settings/base.py`. This means all API endpoints are protected by default, requiring a valid JWT token.
+- `DEFAULT_PERMISSION_CLASSES` is set to `rest_framework.permissions.IsAuthenticated`, ensuring only authenticated users can access protected API resources.
+
+**API Endpoints:**
+- **Token Obtain Pair:** `POST /api/token/`
+    - Used to obtain a new access and refresh token pair by providing `username` and `password`.
+- **Token Refresh:** `POST /api/token/refresh/`
+    - Used to obtain a new access token using a valid refresh token.
+- **User Signup:** `POST /api/users/signup/`
+    - Allows new users to register by providing `username`, `password`, `email`, and `name`. This endpoint has `permission_classes = [AllowAny]` to allow unauthenticated access for registration.
+
+**Testing JWT and Signup:**
+- New test cases for JWT token obtain/refresh and user signup have been added in `danny_django/users/tests/test_jwt.py` and `danny_django/users/tests/api/test_views.py` respectively.
 
 ### Live reloading and Sass CSS compilation
 
@@ -76,7 +101,7 @@ celery -A config.celery_app worker -B -l info
 
 In development, it is often nice to be able to see emails that are being sent from your application. If you choose to use [Mailpit](https://github.com/axllent/mailpit) when generating the project a local SMTP server with a web interface will be available.
 
-1.  [Download the latest Mailpit release](https://github.com/axllent/mailpit/releases) for your OS.
+1.  [Download the latest Mailpit release](https://github.com/axllent/mailpit) for your OS.
 
 2.  Copy the binary file to the project root.
 

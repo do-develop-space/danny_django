@@ -1,0 +1,8 @@
+feat: Implement JWT authentication and user signup API
+
+- Integrate djangorestframework-simplejwt for token-based authentication.
+- Configure JWT settings in base.py and add token URLs in config/urls.py.
+- Set SECRET_KEY in .envs/.local/.django.
+- Implement user signup API endpoint with UserCreateSerializer and AllowAny permission.
+- Add test cases for JWT token obtain/refresh and user signup.
+- Update README.md to reflect new authentication features and configurations.
